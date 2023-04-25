@@ -7,7 +7,7 @@ def save(album):
     sql = f"INSERT INTO albums (title, genre, artist_id) VALUES (%s, %s, %s) RETURNING *"
     values = [album.title, album.genre, album.artist.id]
     rows = run_sql(sql, values)
-    id = rows[0][id]
+    id = rows[0]['id']
     return album
 
 
@@ -44,13 +44,21 @@ def delete(id):
     values = [id]
     run_sql(sql, values)
 
-def update(task):
-    sql = "UPDATE tasks SET (description, user_id, duration, completed) = (%s, %s, %s, %s) WHERE id = %s"
-    values = [task.description, task.user.id, task.duration, task.completed, task.id]
-    run_sql(sql, values)
 
 def update(album):
     sql = "UPDATE albums SET (title, genre, artist_id) = (%s, %s, %s) WHERE id = %s"
     values = [album.title, album.genre, album.artist.id, album.id]
     run_sql(sql, values)
 
+# oof, let's see if this works!
+#UPDATE: it did not :(
+def list_albums_by_artist(artist):
+    albums_by_artist = []
+    sql = "SELECT * FROM albums WHERE artist_id = %s"
+    values = [artist.id]
+    rows = run_sql(sql, values)
+    if rows:
+        for row in rows:
+            album = Album(row['title'], row['genre'], row['artist'], row['id'])
+            albums_by_artist.append(album)
+    return albums_by_artist
